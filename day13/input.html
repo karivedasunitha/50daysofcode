@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="myInput">
+    <script>
+        document.getElementById("myInput").addEventListener("input",function(){
+            console.log("current input"+this.value);
+        });
+    </script>
+    <select id="myInput">
+        <option>Apple</option>
+        <option>Banana</option>
+    </select>
+    <script>
+        document.getElementById("myInput").addEventListener("change",function(){
+            alert("Input changed to:"+ this.value);
+        });
+        </script>
+    <div class="section">
+        <h2>Submit Event</h2>
+        <form if="myForm">
+            <input type="text" placeholder="Your name">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementByld("myForm").addEventListener("submit",function(event){
+            event.preventDefault();
+            alert("Form submitted!");
+        });
+    </script>
+</body>
+</html>

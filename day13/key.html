@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text">
+    <script>
+        document.addEventListener("keydown",function(event){
+            console.log("key pressed:"+
+                event.key);
+                console.log("key code:"+event.keyCode);
+        });
+    </script>
+    <div class="section">
+        <h2>Keyup Event</h2>
+        <input type="text" Id="key up" placeholder="Press any key">
+        </div>
+        <script>
+            document.getElementById("key up").addEventListener("key up",function(event){
+                console.log("You related:"+event.key);
+            });
+        </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weather Display with Clouds & City Input</title>
+<style>
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body, html {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to top, #87CEEB 0%, #fff 100%);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Weather container */
+  .weather-container {
+    position: relative;
+    z-index: 10;
+    max-width: 400px;
+    margin: 80px auto;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 30px 40px;
+    text-align: center;
+  }
+
+  .weather-temp {
+    font-size: 72px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .weather-desc {
+    font-size: 24px;
+    font-weight: 500;
+    color: #666;
+    margin-top: 10px;
+    text-transform: capitalize;
+  }
+
+  .weather-location {
+    font-size: 20px;
+    color: #555;
+    margin-top: 5px;
+  }
+
+  /* Input and button */
+  .city-input {
+    margin-top: 20px;
+  }
+  input[type="text"] {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 1.5px solid #aaa;
+    width: 70%;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  input[type="text"]:focus {
+    border-color: #1e90ff;
+  }
+  button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: none;
+    background-color: #1e90ff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #0c6cd1;
+  }
+
+  /* Cloud styles */
+  .cloud {
+    position: absolute;
+    background: #fff;
+    background: linear-gradient(to bottom, #fff 5%, #f1f1f1 100%);
+    border-radius: 100px;
+    opacity: 0.8;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* Different sized clouds */
+  .cloud.small {
+    width: 100px;
+    height: 60px;
+    top: 30%;
+    left: -150px;
+    animation-name: moveClouds;
+    animation-duration: 40s;
+  }
+
+  .cloud.medium {
+    width: 150px;
+    height: 80px;
+    top: 50%;
+    left: -200px;
+    animation-name: moveClouds;
+    animation-duration: 60s;
+  }
+
+  .cloud.large {
+    width: 220px;
+    height: 100px;
+    top: 70%;
+    left: -300px;
+    animation-name: moveClouds;
+    animation-duration: 80s;
+  }
+
+  /* Individual cloud blobs to make shape */
+  .cloud::before,
+  .cloud::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  .cloud::before {
+    width: 60%;
+    height: 100%;
+    top: -25%;
+    left: 15%;
+  }
+
+  .cloud::after {
+    width: 60%;
+    height: 60%;
+    top: 10%;
+    right: 15%;
+  }
+
+  @keyframes moveClouds {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(120vw);
+    }
+  }
+
+  /* Responsive text scaling */
+  @media (max-width: 480px) {
+    .weather-container {
+      max-width: 90vw;
+      padding: 20px;
+    }
+
+    .weather-temp {
+      font-size: 56px;
+    }
+
+    .weather-desc {
+      font-size: 20px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      font-size: 14px;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="weather-container" id="weather">
+  <div class="weather-temp" id="temp">--°C</div>
+  <div class="weather-desc" id="desc">Enter a city below</div>
+  <div class="weather-location" id="location">Your Location</div>
+
+  <div class="city-input">
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button id="fetchWeatherBtn">Get Weather</button>
+  </div>
+</div>
+
+<!-- Clouds -->
+<div class="cloud small"></div>
+<div class="cloud medium"></div>
+<div class="cloud large"></div>
+
+<script>
+  const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY'; // <-- Replace with your OpenWeatherMap API key
+
+  const tempEl = document.getElementById('temp');
+  const descEl = document.getElementById('desc');
+  const locationEl = document.getElementById('location');
+  const cityInput = document.getElementById('cityInput');
+  const fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
+
+  async function getWeather(city) {
+    if (!city) {
+      alert('Please enter a city name');
+      return;
+    }
+
+    try {
+      // Fetch weather data from OpenWeatherMap
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error('City not found');
+      }
+
+      const data = await response.json();
+
+      // Update UI
+      tempEl.textContent = Math.round(data.main.temp) + '°C';
+      descEl.textContent = data.weather[0].description;
+      `locationEl.textContent = ${data.name}, ${data.sys.country}`;
+    } catch (error) {
+      tempEl.textContent = '--°C';
+      descEl.textContent = 'Could not find city';
+      locationEl.textContent = '';
+      console.error(error);
+      alert('City not found. Please try again.');
+    }
+  }
+
+  fetchWeatherBtn.addEventListener('click', () => {
+    const city = cityInput.value.trim();
+    getWeather(city);
+  });
+
+  // Optional: fetch weather when pressing Enter in input box
+  cityInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      fetchWeatherBtn.click();
+    }
+  });
+</script>
+
+</body>
+</html>
